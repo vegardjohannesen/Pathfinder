@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QList>
 
+#include "cell.h"
+
 class MapImage : public QQuickPaintedItem
 {
     Q_OBJECT
@@ -13,7 +15,7 @@ class MapImage : public QQuickPaintedItem
 
 private:
     bool m_traversable;
-    QVector<int> m_mapMatrix;
+    QVector<Cell> m_mapMatrix;
     int m_rows;
     int m_columns;
 

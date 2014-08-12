@@ -46,7 +46,7 @@ void MapImage::paint(QPainter *painter)
     QColor white(255,255,255);
     for (int i=0; i<m_rows;i++) {
         for (int j=0; j<m_columns;j++) {
-            if (m_mapMatrix[j*m_columns + i]>0) {
+            if (m_mapMatrix[j*m_columns + i].traverable()>0) {
                 test.setPixel(i,j,red.rgba());
             } else {
                 test.setPixel(i,j,white.rgba());

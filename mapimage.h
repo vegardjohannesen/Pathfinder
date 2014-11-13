@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QList>
 
+#include "cell.h"
+
 class MapImage : public QQuickPaintedItem
 {
     Q_OBJECT

@@ -32,10 +32,9 @@ ApplicationWindow {
         return {i: i, j: j, G: 0, H: 0, F: 0, cameFrom: null}
     }
 
-    function findPath() {
-        mapImage.clearPath()
-        var target = square(10,10)
-        var start = square(0,0)
+    function findPath(startPoint, targetPoint) {
+        var start = square(startPoint.x, startPoint.y)
+        var target = square(targetPoint.x, targetPoint.y)
         var current = square(start.i, start.j)
         var openList = []
         var closedList = []
@@ -58,6 +57,19 @@ ApplicationWindow {
                     }
                     if(mapImage.cost(i,j) > 1) {
                         continue
+                    }
+                    // Disallow corner crossing
+                    if(!(di === 0 || dj === 0)) {
+                        var alti = current.i + di
+                        var altj = current.j
+                        if(mapImage.cost(alti, altj) > 1) {
+                            continue
+                        }
+                        alti = current.i
+                        altj = current.j + dj
+                        if(mapImage.cost(alti, altj) > 1) {
+                            continue
+                        }
                     }
 
                     adjacent.G = current.G + Math.sqrt(di*di + dj*dj)
@@ -87,17 +99,30 @@ ApplicationWindow {
         mapImage.setTraveled(current.i, current.j)
         while(current.cameFrom !== null) {
             current = current.cameFrom
-            path.push(current)
+            path.push(Qt.point(current.i, current.j))
             mapImage.setTraveled(current.i, current.j)
         }
         return path
     }
 
     Timer {
-        interval: 200
+        interval: 16
         repeat: true
         running: true
-        onTriggered: findPath()
+//        onTriggered: findPath()
+        onTriggered: mapImage.step()
+    }
+
+    Timer {
+        interval: 500
+        repeat: true
+        running: true
+        onTriggered: {
+            if(mapImage.pathsDirty) {
+                mapImage.refreshPaths()
+                mapImage.pathsDirty = false
+            }
+        }
     }
 
     Column {
@@ -141,6 +166,66 @@ ApplicationWindow {
         columns: 20
         anchors.centerIn: parent
         traversable: radioButton1.checked
+
+        property var entities: []
+        property bool pathsDirty: true
+
+        Component.onCompleted: {
+            for(var i = 0; i < 10; i++) {
+                var component = Qt.createComponent("Entity.qml")
+                var properties = {
+                    target: Qt.point(rows / 2, columns / 2),
+                    mapImage: mapImage
+                }
+
+                var entity = component.createObject(mapImage, properties)
+                entities.push(entity)
+            }
+        }
+
+        function positionFromCoordinate(coordinate) {
+            if(columns < 1 || rows < 1) {
+                return Qt.point(0,0)
+            }
+            return Qt.point(coordinate.y * width / columns, coordinate.x * height / rows)
+        }
+
+        function coordinateFromPosition(position) {
+            return Qt.point(parseInt(position.y / height * rows), parseInt(position.x / width * columns))
+        }
+
+        function step() {
+            for(var i in entities) {
+                var entity = entities[i]
+                entity.move()
+            }
+        }
+
+        function refreshPaths() {
+            mapImage.clearPath()
+            for(var i in entities) {
+                var entity = entities[i]
+                entity.updatePath()
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            function changeSquare(mouse) {
+                var coordinate = mapImage.coordinateFromPosition(Qt.point(mouse.x, mouse.y))
+                console.log(coordinate)
+                mapImage.changeTraversable(coordinate.x, coordinate.y)
+                mapImage.pathsDirty = true
+            }
+
+            onPressed: {
+                changeSquare(mouse)
+            }
+
+            onPositionChanged: {
+                changeSquare(mouse)
+            }
+        }
     }
 }
 

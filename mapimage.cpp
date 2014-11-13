@@ -98,11 +98,11 @@ void MapImage::paint(QPainter *painter)
     for (int i=0; i<m_rows;i++) {
         for (int j=0; j<m_columns;j++) {
             if (m_mapMatrix[i*m_columns + j]>0) {
-                image.setPixel(i,j,red.rgba());
+                image.setPixel(j,i,red.rgba());
             } else if (m_travelMatrix[i*m_columns + j]>0) {
-                image.setPixel(i,j,green.rgba());
+                image.setPixel(j,i,green.rgba());
             } else {
-                image.setPixel(i,j,white.rgba());
+                image.setPixel(j,i,white.rgba());
             }
         }
     }
@@ -124,9 +124,9 @@ int MapImage::columns() const
     return m_columns;
 }
 
-void MapImage::changeTraversable(QMouseEvent *event) {
-    int i = m_rows * ( (double) event->pos().x() / contentsBoundingRect().size().width() );
-    int j = m_columns * ( (double) event->pos().y() / contentsBoundingRect().size().height() );
+void MapImage::changeTraversable(int i, int j) {
+//    int i = m_rows * ( (double) event->pos().y() / contentsBoundingRect().size().height() );
+//    int j = m_columns * ( (double) event->pos().x() / contentsBoundingRect().size().width() );
 
     if (!inBounds(i,j)) {
         return;
@@ -134,14 +134,4 @@ void MapImage::changeTraversable(QMouseEvent *event) {
 
     m_mapMatrix[i*m_columns + j] = !m_traversable;
     update();
-}
-
-void MapImage::mousePressEvent(QMouseEvent *event)
-{
-    changeTraversable(event);
-}
-
-void MapImage::mouseMoveEvent(QMouseEvent *event)
-{
-    changeTraversable(event);
 }

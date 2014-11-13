@@ -20,6 +20,7 @@ public:
     Q_INVOKABLE double cost(int i, int j) const;
     Q_INVOKABLE bool inBounds(int i, int j) const;
     Q_INVOKABLE void setTraveled(int i, int j);
+    Q_INVOKABLE void changeTraversable(int i, int j);
 
 signals:
     void traversableChanged(bool arg);
@@ -43,18 +44,12 @@ public:
     int rows() const;
     int columns() const;
 
-protected:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-
 private:
     bool m_traversable;
     QVector<int> m_mapMatrix;
     QVector<int> m_travelMatrix;
     int m_rows;
     int m_columns;
-
-    void changeTraversable(QMouseEvent *event);
 };
 
 #endif // MAPIMAGE_H

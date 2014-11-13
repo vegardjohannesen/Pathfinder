@@ -60,7 +60,7 @@ ApplicationWindow {
                         continue
                     }
 
-                    adjacent.G = current.G + 1
+                    adjacent.G = current.G + Math.sqrt(di*di + dj*dj)
                     var deltaRow = target.i - adjacent.i
                     var deltaColumn = target.j - adjacent.j
                     adjacent.H = Math.sqrt(deltaRow*deltaRow + deltaColumn*deltaColumn)

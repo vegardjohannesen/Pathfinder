@@ -171,7 +171,7 @@ ApplicationWindow {
         property bool pathsDirty: true
 
         Component.onCompleted: {
-            for(var i = 0; i < 10; i++) {
+            for(var i = 0; i < 1; i++) {
                 var component = Qt.createComponent("Entity.qml")
                 var properties = {
                     target: Qt.point(rows / 2, columns / 2),
